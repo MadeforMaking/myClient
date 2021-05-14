@@ -7,6 +7,8 @@ class App extends Component {
     return (
     <div className="App">
       <Head/>
+      <div>Content</div>
+      <p className="App-text">Hello there this is me</p>
     </div>
   );
   }
@@ -29,7 +31,10 @@ function Bar(props){
 class Clock extends Component {
   constructor(props){
     super(props);
-    this.state = {date: new Date()};
+    this.state = {
+      date: new Date(), 
+      isMorning:true
+    };
   }
 
   componentDidMount(){
@@ -37,9 +42,12 @@ class Clock extends Component {
       () => this.tick(),
       1000
     );
+    this.setState({
+      isMorning: (this.state.date.getUTCHours() < 11)
+    });
   }
 
-  componentDidUnmount(){
+  componentWillUnmount(){
     clearInterval(this.timerID)
   }
 
@@ -49,10 +57,11 @@ class Clock extends Component {
     });
   }
 
+
   render(){
     return (
       <div>
-        <h2 className="App-text">It is {this.state.date.toLocaleTimeString()}.</h2>
+        <h2 className="App-text">It is {this.state.date.toLocaleDateString() } @ {this.state.date.toLocaleTimeString()} {this.state.isMorning ? "am" : "pm"}.</h2>
       </div>
     );
   }
