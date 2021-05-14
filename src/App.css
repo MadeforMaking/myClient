@@ -1,5 +1,7 @@
 .App {
+  background-color: #3e4147;
   text-align: center;
+  height: auto;
 }
 
 .App-logo {
@@ -14,14 +16,29 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  height: 100px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: left;
+  justify-content: left;
   color: white;
+}
+
+.App-bar {
+  width: 100vw;
+}
+
+.App-title {
+  margin-top: 0px;
+  text-align: center;
+  color: whitesmoke;
+  font-size: calc(10px + 2vmin);
+}
+
+.App-text {
+  margin-bottom: 0px;
+  text-align: center;
+  color: gainsboro;
 }
 
 .App-link {
