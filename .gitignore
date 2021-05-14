@@ -136,4 +136,4 @@ dist
 .pnp.*
 
 # personal files
-notes/
+/notes
