@@ -137,4 +137,4 @@ jsconfig.json
 .pnp.*
 
 #Custom
-./notes
+/notes
