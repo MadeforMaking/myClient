@@ -136,3 +136,5 @@ jsconfig.json
 .yarn/install-state.gz
 .pnp.*
 
+#Custom
+./notes
