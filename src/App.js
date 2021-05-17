@@ -1,5 +1,4 @@
 import React, { Component , useState, useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
@@ -7,6 +6,9 @@ class App extends Component {
     return (
     <div className="App">
       <Head/>
+      <div className="App-Content">
+        <ConversionCard/>
+      </div>
     </div>
   );
   }
@@ -14,14 +16,28 @@ class App extends Component {
 
 function Head(props){
   return(
-    <div>
+    <div className="App-Head">
       <Bar />
     </div>
   )
 }
 
 function Bar(props){
-  return <h1 className="App-title">Home Server</h1>
+  return <h1 className="App-Title">Home Server</h1>
+}
+
+class ConversionCard extends Component {
+  constructor(props){
+    super(props);
+    this.state = {}
+  }
+  render(){
+    return(
+      <div className="Conversion-Card">
+        <h1>Conversion Card</h1>
+      </div>
+    )
+  }
 }
 
 class Toggle extends Component {

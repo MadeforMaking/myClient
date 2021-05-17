@@ -1,12 +1,24 @@
 .App {
   position: static;
-  background-color: #3e4147;
   text-align: center;
   height: auto;
 }
 
-.App-title {
-  position: relative;
+.App-Head{
+  background-color: #3e4147;
+  width: 100vw;
   color: gray;
   font-size: calc(10px + 2vmin);
+}
+
+.App-Title {
+  margin: 0;
+}
+
+.Conversion-Card {
+  background-color: blueviolet;
+}
+
+.App-Content {
+  padding: 2%;
 }
