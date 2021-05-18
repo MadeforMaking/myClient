@@ -7,24 +7,28 @@ function toInches(mm) {
   return mm / 25.4;
 }
 
-function toFraction(value){
+function toMilimeters(inch) {
+  return inch * 25.4;
+}
+
+function toFraction(value) {
   return (new Fraction(value).toString());
 }
 
-function isFraction(value){
-  if (isNaN(Number(value)) & (String(value).indexOf('/') !== -1) & (String(value).indexOf('undefined') <= 0)){
+function isFraction(value) {
+  if (isNaN(Number(value)) & (String(value).indexOf('/') !== -1) & (String(value).indexOf('undefined') <= 0)) {
     return true;
   }
-  return false; 
+  return false;
 }
 
-function tryConvert(value, conversion){
+function tryConvert(value, conversion) {
   const input = parseFloat(value);
-  if (Number.isNaN(input)){
+  if (Number.isNaN(input)) {
     return '';
   }
   const output = conversion(input);
-  const rounded = Math.round(output * 1000)/1000;
+  const rounded = Math.round(output * 1000) / 1000;
   return rounded.toString();
 }
 
@@ -52,8 +56,8 @@ function Bar(props) {
 }
 
 function FractionForm(props) {
-  return(
-    <p>The fraction is {toFraction(props.value)} </p> 
+  return (
+    <p>The fraction is {toFraction(props.value)} </p>
   );
 }
 
@@ -84,22 +88,26 @@ class ConversionList extends Component {
   }
 }
 
+const scaleNames = {
+  mm: 'Milimeters',
+  in: 'Inches'
+}
+
 class ConversionInput extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.state = {conversion: ''};
   }
 
   handleChange(e) {
-    this.setState({ conversion: e.target.value })
+    this.props.onConversionChange(e.target.value);
   }
 
-  render(){
-    const conversion = this.state.conversion;
+  render() {
+    const conversion = this.props.conversion;
     const scale = this.props.scale;
     return (
-      <input value={conversion} onChange={this.handleChange}/>
+      <input value={conversion} placeholder={scaleNames[scale]} onChange={this.handleChange} />
     )
   }
 }
@@ -107,27 +115,36 @@ class ConversionInput extends Component {
 class ConversionCard extends Component {
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.state = { conversion: '' };
+    this.handleMilimeterChange = this.handleMilimeterChange.bind(this);
+    this.handleInchChange = this.handleInchChange.bind(this);
+    this.state = {
+      conversion: '',
+      scale: 'mm'
+    };
   }
 
-  handleChange(e) {
-    this.setState({ conversion: e.target.value })
+  handleInchChange(conversion) {
+    this.setState({ scale: 'in', conversion });
+  }
+
+  handleMilimeterChange(conversion) {
+    this.setState({ scale: 'mm', conversion });
   }
 
   render() {
-    const value = this.state.conversion;
+    const conversion = this.state.conversion;
+    const scale = this.state.scale;
+    const milimeters = scale === 'in' ? tryConvert(conversion, toMilimeters) : conversion;
+    const inches = scale === 'mm' ? tryConvert(conversion, toInches) : conversion;
     return (
       <div className="Card-Conversion">
         <h1>Conversion Card</h1>
         <fieldset>
-          <ConversionList></ConversionList>
+          <ConversionList />
           <legend>Enter Conversion values</legend>
-          <input placeholder="mm" value={value} onChange={this.handleChange}></input>
-          <input placeholder="in"></input>
-          { //Show if Can be fraction, and is not nothing
-            isFraction(toFraction(value)) && <FractionForm value={parseFloat(value)}/>
-          }
+          <ConversionInput scale="mm" conversion={milimeters} onConversionChange={this.handleMilimeterChange} />
+          <ConversionInput scale="in" conversion={inches} onConversionChange={this.handleInchChange} />
+          {isFraction(toFraction(conversion)) && <FractionForm value={parseFloat(conversion)} />}
         </fieldset>
       </div>
     )
