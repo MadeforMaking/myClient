@@ -11,6 +11,14 @@ function toMilimeters(inch) {
   return inch * 25.4;
 }
 
+function toPounds(kg){
+  return 0;
+}
+
+function toKilograms(lbs){
+  return 0;
+}
+
 function toFraction(value) {
   return (new Fraction(value).toString());
 }
@@ -69,18 +77,24 @@ class ConversionList extends Component {
         {
           value: "mm<>in",
           text: "mm <> in",
-          func: toInches
+          func: [toInches, toMilimeters]
+        },
+        {
+          value: "lbs<>kg",
+          text: "lbs <> kg",
+          func: [toPounds, toKilograms]
         }
       ]
     }
   }
   render() {
     const conversions = this.state.conversions;
+    const mode = this.props.mode;
     return (
-      <select>
-        {conversions.map((conv, index) => {
+      <select defaultValue={mode}>
+        {conversions.map((mode, index) => {
           return (
-            <option value={conv.value} key={index}>{conv.text}</option>
+            <option value={mode.value} key={index}>{mode.text}</option>
           );
         })}
       </select>
@@ -88,6 +102,7 @@ class ConversionList extends Component {
   }
 }
 
+//Implement this to work with the List Component
 const scaleNames = {
   mm: 'Milimeters',
   in: 'Inches'
