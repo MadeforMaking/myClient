@@ -15,10 +15,12 @@
   margin: 0;
 }
 
-.Conversion-Card {
+.Card-Conversion {
   background-color: blueviolet;
+  margin: 1%;
 }
 
 .App-Content {
+  display: flex;
   padding: 2%;
 }
