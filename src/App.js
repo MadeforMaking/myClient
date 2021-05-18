@@ -7,11 +7,15 @@ function toInches(mm) {
   return mm / 25.4;
 }
 
-function FractionForm(props) {
-  var frac = (new Fraction(props.value).toString());
-  return(
-    <p>The fraction is {frac} </p> 
-  );
+function toFraction(value){
+  return (new Fraction(value).toString());
+}
+
+function isFraction(value){
+  if (isNaN(Number(value)) & (String(value).indexOf('/') !== -1) & (String(value).indexOf('undefined') <= 0)){
+    return true;
+  }
+  return false; 
 }
 
 function tryConvert(value, conversion){
@@ -45,6 +49,12 @@ function Head(props) {
 
 function Bar(props) {
   return <h1 className="App-Title">Home Server</h1>
+}
+
+function FractionForm(props) {
+  return(
+    <p>The fraction is {toFraction(props.value)} </p> 
+  );
 }
 
 class ConversionList extends Component {
@@ -115,8 +125,8 @@ class ConversionCard extends Component {
           <legend>Enter Conversion values</legend>
           <input placeholder="mm" value={value} onChange={this.handleChange}></input>
           <input placeholder="in"></input>
-          {
-            isNaN(parseFloat(value)) === false && <FractionForm value={parseFloat(value)}/>
+          { //Show if Can be fraction, and is not nothing
+            isFraction(toFraction(value)) && <FractionForm value={parseFloat(value)}/>
           }
         </fieldset>
       </div>
