@@ -11,11 +11,15 @@ function toMilimeters(inch) {
   return inch * 25.4;
 }
 
-function toPounds(kg){
-  return 0;
+function toPounds(kg) {
+  return kg / 0.45359237;
 }
 
-function toKilograms(lbs){
+function toKilograms(lbs) {
+  return lbs * 0.45359237;
+}
+
+function toNewtons() {
   return 0;
 }
 
@@ -36,7 +40,7 @@ function tryConvert(value, conversion) {
     return '';
   }
   const output = conversion(input);
-  const rounded = Math.round(output * 1000) / 1000;
+  const rounded = Math.round(output * 100000) / 100000;
   return rounded.toString();
 }
 
@@ -69,43 +73,87 @@ function FractionForm(props) {
   );
 }
 
-class ConversionList extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      conversions: [
-        {
-          value: "mm<>in",
-          text: "mm <> in",
-          func: [toInches, toMilimeters]
-        },
-        {
-          value: "lbs<>kg",
-          text: "lbs <> kg",
-          func: [toPounds, toKilograms]
-        }
-      ]
-    }
-  }
-  render() {
-    const conversions = this.state.conversions;
-    const mode = this.props.mode;
-    return (
-      <select defaultValue={mode}>
-        {conversions.map((mode, index) => {
-          return (
-            <option value={mode.value} key={index}>{mode.text}</option>
-          );
-        })}
-      </select>
-    )
-  }
-}
 
 //Implement this to work with the List Component
 const scaleNames = {
   mm: 'Milimeters',
   in: 'Inches'
+}
+
+//Implement this externally in conversions.js file
+const modes = [
+  {
+    value: 'mm_in',
+    scales: [{
+      unit: 'mm',
+      name: 'Milimeters',
+      func: toMilimeters
+    },
+    {
+      unit: 'in',
+      name: 'inches',
+      func: toInches
+    }],
+  },
+  {
+    value: 'lbs_kg',
+    scales: [{
+      unit: 'lbs',
+      name: 'Pounds',
+      func: toPounds
+    },
+    {
+      unit: 'kg',
+      name: 'Kilograms',
+      func: toKilograms
+    }],
+  },
+  {
+    value: 'lbs_kg_N',
+    scales: [{
+      unit: 'lbs',
+      name: 'Pounds',
+      func: toPounds
+    },
+    {
+      unit: 'kg',
+      name: 'Kilograms',
+      func: toKilograms
+    },
+    {
+      unit: 'N',
+      name: 'Newtons',
+      func: toNewtons
+    }],
+  },
+]
+
+class ConversionList extends Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {};
+  }
+
+  handleChange(event) {
+    this.props.onModeChange(event.target);
+  }
+
+  render() {
+    const modes = this.props.modes;
+    const mode = this.props.defaultMode;
+    return (
+      <select defaultValue={mode.value} onChange={this.handleChange}>
+        {modes.map((mode, index) => {
+          return (
+            <option value={mode.value} key={index}>{mode.scales.map((scale) => {
+              return scale.unit;
+            }).join(" <> ")}</option>
+          );
+        })}
+      </select>
+    )
+  }
 }
 
 class ConversionInput extends Component {
@@ -114,15 +162,14 @@ class ConversionInput extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(e) {
-    this.props.onConversionChange(e.target.value);
+  handleChange(event) {
+    this.props.onInputChange(event.target);
   }
 
   render() {
     const conversion = this.props.conversion;
-    const scale = this.props.scale;
     return (
-      <input value={conversion} placeholder={scaleNames[scale]} onChange={this.handleChange} />
+      <input value={conversion} placeholder={this.props.placeholder} onChange={this.handleChange} />
     )
   }
 }
@@ -130,35 +177,68 @@ class ConversionInput extends Component {
 class ConversionCard extends Component {
   constructor(props) {
     super(props);
+    const defMode = 0;
+    this.handleModeChange = this.handleModeChange.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.handleMilimeterChange = this.handleMilimeterChange.bind(this);
     this.handleInchChange = this.handleInchChange.bind(this);
     this.state = {
+      modes: modes,
       conversion: '',
-      scale: 'mm'
+      conversions: modes[defMode].scales.map((scale) => {
+        return '';
+      }),
+      modeIndex: defMode,
+      lastScale: modes[defMode].scales[defMode].name,
     };
   }
 
+  handleModeChange(target) {
+    console.log(target);
+    let a = this.state.modes.map((mode, index) => {
+      return mode.value;
+    });
+    this.setState({ modeIndex: a.indexOf(target.value), conversions: ['', ''] });
+  }
+
+  handleChange(target) {
+    let conversions = this.state.modes[this.state.modeIndex].scales.map((scale, index) => {
+      if (target.placeholder === scale.name) {
+        return target.value;
+      }
+      return tryConvert(target.value, scale.func);
+    });
+    this.setState({ lastScale: target.placeholder, conversion: target.value, conversions: conversions });
+  }
+
   handleInchChange(conversion) {
-    this.setState({ scale: 'in', conversion });
+    this.setState({ lastScale: 'in', conversion });
   }
 
   handleMilimeterChange(conversion) {
-    this.setState({ scale: 'mm', conversion });
+    this.setState({ lastScale: 'mm', conversion });
   }
 
   render() {
     const conversion = this.state.conversion;
-    const scale = this.state.scale;
-    const milimeters = scale === 'in' ? tryConvert(conversion, toMilimeters) : conversion;
-    const inches = scale === 'mm' ? tryConvert(conversion, toInches) : conversion;
+    const mode = this.state.modes[this.state.modeIndex];
+    const lastScale = this.state.lastScale;
+    const conversions = this.state.conversions;
+
+    // need to implement new modes state 
+    const milimeters = lastScale === 'in' ? tryConvert(conversion, toMilimeters) : conversion;
+    const inches = lastScale === 'mm' ? tryConvert(conversion, toInches) : conversion;
     return (
       <div className="Card-Conversion">
         <h1>Conversion Card</h1>
         <fieldset>
-          <ConversionList />
+          <ConversionList modes={modes} defaultMode={mode} onModeChange={this.handleModeChange} />
           <legend>Enter Conversion values</legend>
-          <ConversionInput scale="mm" conversion={milimeters} onConversionChange={this.handleMilimeterChange} />
-          <ConversionInput scale="in" conversion={inches} onConversionChange={this.handleInchChange} />
+          {mode.scales.map((scale, index) => {
+            return <ConversionInput key={index} scale={scale.name} placeholder={scale.name} conversion={conversions[index]} onInputChange={this.handleChange} />
+          })}
+          {/* <ConversionInput scale="mm" conversion={milimeters} onInputChange={this.handleMilimeterChange} />
+          <ConversionInput scale="in" conversion={inches} onInputChange={this.handleInchChange} /> */}
           {isFraction(toFraction(conversion)) && <FractionForm value={parseFloat(conversion)} />}
         </fieldset>
       </div>
