@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ConversionCard } from './conversions';
+import { ConversionCard } from './ConversionCards';
 import './App.css';
 
 class App extends Component {
