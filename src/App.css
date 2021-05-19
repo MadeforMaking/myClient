@@ -8,19 +8,19 @@
   background-color: #3e4147;
   width: 100vw;
   color: gray;
-  font-size: calc(10px + 2vmin);
 }
 
 .App-Title {
   margin: 0;
+  font-size: 25px;
 }
 
 .Card-Conversion {
   background-color: blueviolet;
-  margin: 1%;
+  margin: 1px;
 }
 
 .App-Content {
   display: flex;
-  padding: 2%;
+  padding: 5px;
 }
